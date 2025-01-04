@@ -1,13 +1,14 @@
 import requests
+
 from datetime import datetime
-from api_key_reader import API_KEY
+from settings import API_KEY
 from data_writer import data_writer
 
-def main(api_key: str, city: str):
+def main(city: str):
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     params = {
         'q': city,
-        'appid': api_key,
+        'appid': API_KEY,
         'units': 'metric'  
     }
 
@@ -20,16 +21,17 @@ def main(api_key: str, city: str):
     wind_speed = weather_data['wind']['speed']
     date = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 
-    data = {'City': city,
+    data = {
+        'City': city,
         'Temperature': temperature,
         'Humidity': humidity,
         'Wind Speed': wind_speed,
-        'Date': date}
+        'Date': date
+    }
+    
     data_writer(data)
     print(data)
 
-
-city = input('Write city name for info: ').title()
-
 if __name__ == '__main__':
-    main(API_KEY, city)
+    city = input('Write city name for info: ').strip().title()
+    main(city)
