@@ -1,7 +1,7 @@
 import requests
 
 from datetime import datetime
-from keys import API_KEY
+from settings import API_KEY
 from data_writer import data_writer
 
 def request_system(city: str):

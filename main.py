@@ -2,8 +2,8 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message, BotCommand
 from aiogram.filters import Command
-from keys import TOKEN
-from request_settings import request_system
+from settings import TOKEN
+from request_system import request_system
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
