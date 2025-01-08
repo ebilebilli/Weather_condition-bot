@@ -1,37 +1,35 @@
-import requests
+import asyncio
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message, BotCommand
+from aiogram.filters import Command
+from keys import TOKEN
+from request_settings import request_system
 
-from datetime import datetime
-from settings import API_KEY
-from data_writer import data_writer
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
 
-def main(city: str):
-    base_url = "http://api.openweathermap.org/data/2.5/weather"
-    params = {
-        'q': city,
-        'appid': API_KEY,
-        'units': 'metric'  
-    }
+async def command_list():
+    commands = [
+        BotCommand(command='/info', description='Take info about the bot'),
+        BotCommand(command='/weather', description='Get weather information')
+    ]
+    await bot.set_my_commands(commands)
 
-    response = requests.get(base_url, params=params)
-    response.raise_for_status()
-    weather_data = response.json()
+@dp.message(Command('info'))
+async def cmd_start(message: Message):
+    await message.answer('Welcome! Use /weather "city name" to get the weather information')
 
-    temperature = weather_data['main']['temp']
-    humidity = weather_data['main']['humidity']
-    wind_speed = weather_data['wind']['speed']
-    date = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-
-    data = {
-        'City': city,
-        'Temperature': temperature,
-        'Humidity': humidity,
-        'Wind Speed': wind_speed,
-        'Date': date
-    }
+@dp.message(Command('weather'))
+async def cmd_weather(message: Message):
+    city = message.text.split(maxsplit=1)[1].title()
+    loop = asyncio.get_event_loop()
+    weather_info = await loop.run_in_executor(None, request_system, city)
     
-    data_writer(data)
-    print(data)
+    await message.answer(f'Weather in {city}:\n{weather_info}')
+
+async def main_bot():
+    await command_list()
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    city = input('Write city name for info: ').strip().title()
-    main(city)
+    asyncio.run(main_bot())
