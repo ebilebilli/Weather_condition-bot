@@ -27,9 +27,9 @@ async def cmd_weather(message: Message):
     
     await message.answer(f'Weather in {city}:\n{weather_info}')
 
-async def main_bot():
+async def main():
     await command_list()
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    asyncio.run(main_bot())
+    asyncio.run(main())
